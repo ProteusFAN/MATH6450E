@@ -141,18 +141,19 @@
 			\begin{itemize}
 				\item	capable to candle missing features
 				\item	tuning-free
-				\item 	capable to do prediction of sample with specific feature($ p_{train} \neq p_{test} $)
+				\item 	capable to do prediction of samples with specific feature($ p_{train} \neq p_{test} $)
 			\end{itemize}
 		
 			{\color{red} Disadvantage}: 
 			\begin{itemize}
-				\item time-consuming in some degree
+				\item time-consuming in finding appropriate $ k $ 
 			\end{itemize}
 		
 			{\color{red} Potential Improvement}: 
 			\begin{itemize}
 				\item use local FDR to replace t-test
 				\item approximate $ \mathrm{Var}(\hat{y}(X)) $ and $ \mathrm{Bias}^2(\hat{y}(X)) $ more accurate
+				\item speed up the algorithm
 			\end{itemize}
 		}
 		
