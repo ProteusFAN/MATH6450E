@@ -1,6 +1,6 @@
 # MATH6450E
 
-## Latent Dirichlet Allocation using variational inference
+## Latent Dirichlet Allocation using Variational Inference
 This folder is for project 1.
 
 ## Drug Sensitivity
