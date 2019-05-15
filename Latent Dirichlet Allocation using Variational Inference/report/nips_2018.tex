@@ -84,7 +84,7 @@
 
 \section{Introduction}
 
-Latent Dirichlet allocation (LDA) is a three-level hierarchical generative probabilistic model, which generates text as \ref{lda} shows. $ N $ is the number of the documents. $ N_{i} $ is the number of words in document $ i $, which follows Poisson distribution in generating process . $ K $ is the number of topics. $ M $ is the number of words in vocabulary. $ \theta_{i} $ is a $ K $-length vector as the parameter of Multinomial distribution. $ \alpha $ is a $ K $-length vector as the parameter of Dirichlet distribution as the prior of $ \theta_{i} $. $ \varphi_{k} $ is a $ M $-length vector as the parameter of Multinomial distribution. $ \beta $ is a $ M $-length vector as the parameter of Dirichlet distribution as the prior of $ \varphi_{k} $. $ z_{i,j} $ refers to topic index in topic list of word $ j $ in document $ i $. $ w_{i,j} $ refers to the word index in vocabulary of word $ j $ in document $ i $.
+Latent Dirichlet allocation (LDA) is a three-level hierarchical generative probabilistic model, which generates text as \ref{figure_lda} shows. $ N $ is the number of the documents. $ N_{i} $ is the number of words in document $ i $, which follows Poisson distribution in generating process . $ K $ is the number of topics. $ M $ is the number of words in vocabulary. $ \theta_{i} $ is a $ K $-length vector as the parameter of Multinomial distribution. $ \alpha $ is a $ K $-length vector as the parameter of Dirichlet distribution as the prior of $ \theta_{i} $. $ \varphi_{k} $ is a $ M $-length vector as the parameter of Multinomial distribution. $ \beta $ is a $ M $-length vector as the parameter of Dirichlet distribution as the prior of $ \varphi_{k} $. $ z_{i,j} $ refers to topic index in topic list of word $ j $ in document $ i $. $ w_{i,j} $ refers to the word index in vocabulary of word $ j $ in document $ i $.
 
 \begin{figure}[htbp]
 	\centering
@@ -281,7 +281,7 @@ The topics of two held-out sentences are predicted using LDA model as \ref{table
 		Topic index	& Sentences \\
 		\midrule
 		7 & If someone eats devil fruit, he will be hated by sea and will lose his strength if he is submerged in sea. \\
-		6  & The weather on the Grand Line's open sea are extremely unpredictable. \\
+		6 & The weather on the Grand Line's open sea are extremely unpredictable. \\
 		\bottomrule
 	\end{tabular}
 \end{table}
