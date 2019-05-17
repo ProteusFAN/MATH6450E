@@ -1,5 +1,5 @@
 function ell = neg_loglikelihoood(delta)
-%% neg_loglikelihood function w.r.t. delata
+%% neg_loglikelihood function w.r.t. delta
 global paras
 
 % compute beta
