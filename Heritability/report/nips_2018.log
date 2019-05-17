@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2018.1.14)  15 MAY 2019 22:43
+This is XeTeX, Version 3.14159265-2.6-0.99998 (TeX Live 2017) (preloaded format=xelatex 2018.1.14)  17 MAY 2019 15:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -532,25 +532,29 @@ LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <12> not available
 File: se-ascii-print.def 2016/05/16 v1.11 stringenc: Printable ASCII characters
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 101.
-
 [1
 
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 101.
+Overfull \hbox (33.55635pt too wide) in paragraph at lines 126--126
+[] 
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 153.
+[2]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 153.
  (./nips_2018.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 101.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 101.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 101.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 153.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 153.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 153.
  ) 
 Here is how much of TeX's memory you used:
- 11398 strings out of 493005
- 164974 string characters out of 6134596
- 267195 words of memory out of 5000000
- 15241 multiletter control sequences out of 15000+600000
- 26597 words of font info for 52 fonts, out of 8000000 for 9000
+ 11405 strings out of 493005
+ 165101 string characters out of 6134596
+ 271657 words of memory out of 5000000
+ 15245 multiletter control sequences out of 15000+600000
+ 27524 words of font info for 55 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 31i,10n,45p,229b,332s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 31i,11n,45p,557b,363s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on nips_2018.pdf (1 page).
+Output written on nips_2018.pdf (2 pages).

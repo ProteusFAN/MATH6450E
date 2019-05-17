@@ -79,23 +79,75 @@
 \maketitle
 
 \begin{abstract}
-   
+	One application of linear mixed model is to estimate heritability of phenotype based on genotype. In linear mixed model, covariates effects such as age and sex are represented as fix effects part, while heritability is modeled in random effect part. The heritability is estimated by the variance of random effects part over total variance. In this project, we did simulation on GWAS.RData dataset to estimate the heritability of 4 phenotypes.
 \end{abstract}
 
 \section{Introduction}
 
+GWAS refers to Genome-wide association study. GWAS.RData collects $ n = 5123 $ individuals genotypes and phenotypes. $ \mathbf{G} = [g_{im}] \in \mathbb{R}^{n \times p} $ is the genotype matrix where $ p = 319147 $ and each column corresponds to a genetic marker. $ \mathbf{y} $ is a $ n \times 4 $ phenotype matrix, where each column indicates one phenotype. Because each time we only care about one phenotype, without loss of generality, the column we are considering is denoted as $ \mathbf{y} $.
 
+Linear mixed model is to estimate the heritability of each of the four phenotypes as follows
+
+\begin{equation}
+	\mathbf{y} = \mathbf{X} \beta  + \mathbf{W u} + \mathbf{e}.
+\end{equation}
+
+$ \mathbf{X} \beta $ is about fixed effects. $ \mathbb{X} \in \mathbb{R}^{n \times (10 +1) } $ includes the principal components scores corresponding to the first ten leading principal components and one column of ones, instead of covariates matrix in general setting. $ \beta $ is the vector of coefficients corresponding to fixed effects.
+
+$ \mathbf{W u} $ is about random effects. $ \mathbf{u} \sim \mathcal{N} (0, \sigma^{2}_{u} \mathbf{I}) $ is the vector of random effect size. $ \mathbf{W} $ is the standardized genotype matrix with zero mean and unit variance, that is,
+
+\begin{equation}
+	w_{im} = \frac{g_{im} - 2p_{m}}{\sqrt{2p_{m}(1-p_{m})p}},
+\end{equation}
+
+where $ p_{m} $ is the frequency of the reference allele.
+
+$ \mathbf{e} \sim \mathcal{N} (0, \sigma^{2}_{e} \mathbf{I}) $.
+
+The parameters $ \mathbf{\theta} = \left\lbrace \beta, \sigma^{2}_{u}, \sigma^{2}_{e} \right\rbrace $ can be estimated by maximum likelihood estimation. The heritability is calculated by $ \hat{h}^{2} = \frac{\hat{\sigma}^{2}_{u}}{\hat{\sigma}^{2}_{u} + \hat{\sigma}^{2}_{e}} $.
 
 \section{Method}
 
+We can easily have
+\begin{equation}
+	P(\mathbf{y} | \beta, \sigma^{2}_{u}, \sigma^{2}_{e}) = \mathcal{N}(\mathbf{X \beta}, \sigma^{2}_{u} \mathbf{WW}^{\mathrm{T}} + \sigma^{2}_{e}\mathbf{I}).
+\end{equation}
+And the log-likelihood function is
+\begin{equation}\label{eq_loglikelihood}
+	\ell(\beta, \sigma^{2}_{u}, \sigma^{2}_{e}) = -\frac{1}{2}( n \log(2 \pi \sigma^{2}_{u}) + \log(|\mathbf{K} + \delta \mathbf{I}|) + \frac{1}{\sigma^{2}_{u}} (\mathbf{y - X\beta})^{\mathrm{T}} (\mathbf{K} + \delta \mathbf{I})^{-1} (\mathbf{y - X\beta})),
+\end{equation}
+where $ \mathbf{K = WW}^{\mathrm{T}} $ and $ \delta = \frac{\sigma^{2}_{e}}{\sigma^{2}_{u}} $.
+\vspace{1em}
 
+By spectral decomposition, $ \mathbf{K = USU}^{\mathrm{T}} $ and $ \mathbf{I = UU}^{\mathrm{T}} $. Equation \ref{eq_loglikelihood} becomes
+\begin{align}\label{eq_simplifedLoglikelihood}
+		\ell(\beta, \sigma^{2}_{u}, \delta) &= -\frac{1}{2} \left( n \log(2 \pi \sigma^{2}_{u}) + \log(|\mathbf{S} + \delta \mathbf{I}|) +  \frac{1}{\sigma^{2}_{u}} (\mathbf{U}^{\mathrm{T}}\mathbf{y} -  \mathbf{U}^{\mathrm{T}}\mathbf{X}\beta)^{\mathrm{T}} (\mathbf{S} + \delta \mathbf{I})^{-1} (\mathbf{U}^{\mathrm{T}}\mathbf{y} -  \mathbf{U}^{\mathrm{T}}\mathbf{X}\beta)^{\mathrm{T}} \right) \\
+		&=  -\frac{1}{2} \left(n \log(2 \pi \sigma^{2}_{u}) + \sum_{i=1}^{n}\log([\mathbf{S}]_{ii} + \delta) +  \frac{1}{\sigma^{2}_{u}} \sum_{i=1}^{n} \frac{([\mathbf{U}^{\mathrm{T}}\mathbf{y}]_{i} - [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}\beta)^{2}}{[\mathbf{S}]_{ii} + \delta}\right).
+\end{align}
+
+Taking the derivative of equation \ref{eq_simplifedLoglikelihood} w.r.t. $ \beta $ and setting it to zero, we can have
+\begin{align}\label{eq_beta}
+	\hat{\beta} &= [(\mathbf{U}^{\mathrm{T}}\mathbf{X})^{\mathrm{T}} (\mathbf{S} + \delta \mathbf{I})^{-1} (\mathbf{U}^{\mathrm{T}}\mathbf{X})]^{-1}  (\mathbf{U}^{\mathrm{T}}\mathbf{X})^{\mathrm{T}} (\mathbf{S} + \delta \mathbf{I})^{-1} (\mathbf{U}^{\mathrm{T}}\mathbf{y})\\
+	&= \left[ \sum_{i=1}^{n} \frac{1}{[\mathbf{S}]_{ii} + \delta} [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}^{\mathrm{T}} [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}\right]^{-1} \left[ \sum_{i=1}^{n} \frac{1}{[\mathbf{S}]_{ii} + \delta} [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}^{\mathrm{T}} [\mathbf{U}^{\mathrm{T}}\mathbf{y}]_{i}\right]
+\end{align}
+
+Substituting $ \hat{\beta} $ in equation \ref{eq_simplifedLoglikelihood} and taking derivative w.r.t. $ \sigma^{2}_{u} $, we can have
+\begin{equation}\label{eq_sigma_u}
+	\hat{\sigma^{2}_{u}} = \frac{1}{n} \sum_{i=1}^{n} \frac{([\mathbf{U}^{\mathrm{T}}\mathbf{y}]_{i} - [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}\hat{\beta})^{2}}{[\mathbf{S}]_{ii} + \delta}
+\end{equation}
+
+Plugging $ \hat{\sigma}^{2}_{u} $ and $ \hat{\beta} $ into equation \ref{eq_simplifedLoglikelihood}, we have
+\begin{equation}\label{eq_loglikelihood_delta}
+	\ell(\delta) = -\frac{1}{2} \left( n\log(2\pi) + \sum_{i=1}^{n}\log([\mathbf{S}]_{ii} + \delta)+ n + n\log \frac{1}{n} \sum_{i=1}^{n} \frac{([\mathbf{U}^{\mathrm{T}}\mathbf{y}]_{i} - [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}\hat{\beta})^{2}}{[\mathbf{S}]_{ii} + \delta} \right),
+\end{equation}
+which is a function only related to $ \delta $. Brent's method can be implemented to find the maximum of equation \ref{eq_loglikelihood_delta}.
 
 \section{Experiment and Result}
 
+We first select 100 samples with 1000 genetic markers and implement MLE algorithms. But the result is unsatisfactory. $ \delta $ tends to be $ + \infty $, which means $ \frac{\sigma^{2}_{e}}{\sigma^{2}_{u}} $ goes to $ + \infty $ and heritability is $ 0 $. 
 
 
-\section{Conclusion}
-
+%\section{Conclusion}
 
 
 \end{document}

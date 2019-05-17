@@ -3,5 +3,5 @@
 ## Latent Dirichlet Allocation using Variational Inference
 This folder is for project 1.
 
-## Drug Sensitivity
+## Heritability
 This folder is for project 2.
