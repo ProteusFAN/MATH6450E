@@ -33,6 +33,8 @@
 \usepackage{mathrsfs}
 \usepackage{graphicx}
 	\graphicspath{{./image/}}
+	
+\newcommand{\se}[1]{\operatorname{se}(#1)}
 
 \title{\emph{MATH6450E Project 2:} Heritability Estimation based on Linear Mixed Model}
 
@@ -79,14 +81,16 @@
 \maketitle
 
 \begin{abstract}
-	One application of linear mixed model is to estimate heritability of phenotype based on genotype. In linear mixed model, covariates effects such as age and sex are represented as fix effects part, while heritability is modeled in random effect part. The heritability is estimated by the variance of random effects part over total variance. In this project, we did simulation on GWAS.RData dataset to estimate the heritability of 4 phenotypes.
+	
+	One application of linear mixed model is to estimate heritability of phenotype based on genotype. In linear mixed model, covariates effects such as age and sex are represented as fixed effects part, while heritability is modeled as random effects. Heritability is estimated by the variance of random effects over total variance. In this project, we implement linear mixed model on GWAS.RData dataset to inference coefficients of fixedd effects, variance of random effects and error term, heritability and calculate standard errors using observed fisher information and delta methods.
+	
 \end{abstract}
 
 \section{Introduction}
 
-GWAS refers to Genome-wide association study. GWAS.RData collects $ n = 5123 $ individuals genotypes and phenotypes. $ \mathbf{G} = [g_{im}] \in \mathbb{R}^{n \times p} $ is the genotype matrix where $ p = 319147 $ and each column corresponds to a genetic marker. $ \mathbf{y} $ is a $ n \times 4 $ phenotype matrix, where each column indicates one phenotype. Because each time we only care about one phenotype, without loss of generality, the column we are considering is denoted as $ \mathbf{y} $.
+GWAS refers to Genome-wide association study. GWAS.RData collects $ n = 5123 $ individuals genotypes and phenotypes. $ \mathbf{G} = [g_{im} \in \left\lbrace  0, 1, 2  \right\rbrace] \in \mathbb{R}^{n \times p} $ is the genotype matrix where $ p = 319147 $ and each column corresponds to a genetic marker. $ \mathbf{y} $ is a $ n \times 4 $ phenotype matrix, where each column indicates one phenotype. Because each time we only care about one phenotype, without loss of generality, the phenotype (one colum of $ \mathbf{y} $) we are considering is denoted as $ \mathbf{y} $.
 
-Linear mixed model is to estimate the heritability of each of the four phenotypes as follows
+Linear mixed model is as follows
 
 \begin{equation}
 	\mathbf{y} = \mathbf{X} \beta  + \mathbf{W u} + \mathbf{e}.
@@ -108,6 +112,8 @@ The parameters $ \mathbf{\theta} = \left\lbrace \beta, \sigma^{2}_{u}, \sigma^{2
 
 \section{Method}
 
+\subsection{Maximum Likelihood Estimation}
+
 We can easily have
 \begin{equation}
 	P(\mathbf{y} | \beta, \sigma^{2}_{u}, \sigma^{2}_{e}) = \mathcal{N}(\mathbf{X \beta}, \sigma^{2}_{u} \mathbf{WW}^{\mathrm{T}} + \sigma^{2}_{e}\mathbf{I}).
@@ -120,15 +126,15 @@ where $ \mathbf{K = WW}^{\mathrm{T}} $ and $ \delta = \frac{\sigma^{2}_{e}}{\sig
 \vspace{1em}
 
 By spectral decomposition, $ \mathbf{K = USU}^{\mathrm{T}} $ and $ \mathbf{I = UU}^{\mathrm{T}} $. Equation \ref{eq_loglikelihood} becomes
-\begin{align}\label{eq_simplifedLoglikelihood}
+\begin{align}
 		\ell(\beta, \sigma^{2}_{u}, \delta) &= -\frac{1}{2} \left( n \log(2 \pi \sigma^{2}_{u}) + \log(|\mathbf{S} + \delta \mathbf{I}|) +  \frac{1}{\sigma^{2}_{u}} (\mathbf{U}^{\mathrm{T}}\mathbf{y} -  \mathbf{U}^{\mathrm{T}}\mathbf{X}\beta)^{\mathrm{T}} (\mathbf{S} + \delta \mathbf{I})^{-1} (\mathbf{U}^{\mathrm{T}}\mathbf{y} -  \mathbf{U}^{\mathrm{T}}\mathbf{X}\beta)^{\mathrm{T}} \right) \\
-		&=  -\frac{1}{2} \left(n \log(2 \pi \sigma^{2}_{u}) + \sum_{i=1}^{n}\log([\mathbf{S}]_{ii} + \delta) +  \frac{1}{\sigma^{2}_{u}} \sum_{i=1}^{n} \frac{([\mathbf{U}^{\mathrm{T}}\mathbf{y}]_{i} - [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}\beta)^{2}}{[\mathbf{S}]_{ii} + \delta}\right).
+		\label{eq_simplifedLoglikelihood} &=  -\frac{1}{2} \left(n \log(2 \pi \sigma^{2}_{u}) + \sum_{i=1}^{n}\log([\mathbf{S}]_{ii} + \delta) +  \frac{1}{\sigma^{2}_{u}} \sum_{i=1}^{n} \frac{([\mathbf{U}^{\mathrm{T}}\mathbf{y}]_{i} - [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}\beta)^{2}}{[\mathbf{S}]_{ii} + \delta}\right).
 \end{align}
 
 Taking the derivative of equation \ref{eq_simplifedLoglikelihood} w.r.t. $ \beta $ and setting it to zero, we can have
-\begin{align}\label{eq_beta}
+\begin{align}
 	\hat{\beta} &= [(\mathbf{U}^{\mathrm{T}}\mathbf{X})^{\mathrm{T}} (\mathbf{S} + \delta \mathbf{I})^{-1} (\mathbf{U}^{\mathrm{T}}\mathbf{X})]^{-1}  (\mathbf{U}^{\mathrm{T}}\mathbf{X})^{\mathrm{T}} (\mathbf{S} + \delta \mathbf{I})^{-1} (\mathbf{U}^{\mathrm{T}}\mathbf{y})\\
-	&= \left[ \sum_{i=1}^{n} \frac{1}{[\mathbf{S}]_{ii} + \delta} [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}^{\mathrm{T}} [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}\right]^{-1} \left[ \sum_{i=1}^{n} \frac{1}{[\mathbf{S}]_{ii} + \delta} [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}^{\mathrm{T}} [\mathbf{U}^{\mathrm{T}}\mathbf{y}]_{i}\right]
+	\label{eq_beta} &= \left[ \sum_{i=1}^{n} \frac{1}{[\mathbf{S}]_{ii} + \delta} [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}^{\mathrm{T}} [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}\right]^{-1} \left[ \sum_{i=1}^{n} \frac{1}{[\mathbf{S}]_{ii} + \delta} [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}^{\mathrm{T}} [\mathbf{U}^{\mathrm{T}}\mathbf{y}]_{i}\right]
 \end{align}
 
 Substituting $ \hat{\beta} $ in equation \ref{eq_simplifedLoglikelihood} and taking derivative w.r.t. $ \sigma^{2}_{u} $, we can have
@@ -140,14 +146,122 @@ Plugging $ \hat{\sigma}^{2}_{u} $ and $ \hat{\beta} $ into equation \ref{eq_simp
 \begin{equation}\label{eq_loglikelihood_delta}
 	\ell(\delta) = -\frac{1}{2} \left( n\log(2\pi) + \sum_{i=1}^{n}\log([\mathbf{S}]_{ii} + \delta)+ n + n\log \frac{1}{n} \sum_{i=1}^{n} \frac{([\mathbf{U}^{\mathrm{T}}\mathbf{y}]_{i} - [\mathbf{U}^{\mathrm{T}}\mathbf{X}]_{i:}\hat{\beta})^{2}}{[\mathbf{S}]_{ii} + \delta} \right),
 \end{equation}
-which is a function only related to $ \delta $. Brent's method can be implemented to find the maximum of equation \ref{eq_loglikelihood_delta}.
+which is a function only related to $ \delta $. We let $ \log(\delta) \in [-10, 10] $, partition $ [-10, 10] $ into 100 intervals evenly and apply Brent's method for each interval, whereby we find the maximum of equation \ref{eq_loglikelihood_delta} and corresponding $ \hat{\delta} $.
+
+We substitute $ \hat{\delta} $ in equation \ref{eq_beta} and get $ \hat{\beta} $. Then putting $ \hat{\delta} $ and $ \hat{\beta} $ in equation \ref{eq_sigma_u}, we can have $ \hat{\sigma^{2}_{u}} $. Using the relationship among $ \hat{\delta} $, $ \hat{\sigma^{2}_{u}} $ and $ \hat{\sigma^{2}_{e}} $, we can have $ \hat{\sigma^{2}_{e}} $.
+
+Heritability is estimated as 
+\begin{equation}
+\hat{h}^{2} = \frac{\hat{\sigma}^{2}_{u}}{\hat{\sigma}^{2}_{u} + \hat{\sigma}^{2}_{e}}.
+\end{equation}
+
+\subsection{Standard Error based on Observed Fisher Information and Delta Method}
+
+Probability density function of random variable $ X $ w.r.t parameter $ \theta $ is $ f(X;\theta) $. And fisher information of one observation is defined as
+\begin{align}
+	\label{eq_fisherInfo1} \mathcal{I}(\theta) &= \operatorname{E} \left[\left. \left(\frac{\partial}{\partial\theta} \log f(X; \theta) \right)^2 \right| \theta \right], \\
+	\label{eq_fisherInfo2} &= - \operatorname{E} \left[\left. \frac{\partial^2}{\partial\theta^2} \log f(X;\theta) \right| \theta \right],
+\end{align}
+
+When $ \theta $ is a vector, the element of fisher information matrix based on one observation is
+\begin{align}
+\label{eq_fisherInfo1_matrix} [\mathcal{I}(\theta)]_{i,j} &= \operatorname{E} \left[\left. \frac{\partial}{\partial\theta_{i}} \log f(X; \theta) \frac{\partial}{\partial\theta_{j}} \log f(X; \theta) \right| \theta \right], \\
+\label{eq_fisherInfo2_matrix} &= - \operatorname{E} \left[\left. \frac{\partial^2}{\partial\theta_{i}\partial\theta_{j}} \log f(X;\theta) \right| \theta \right].
+\end{align}
+
+One property of MLE is $ \sqrt{n}(\hat{\theta} - \theta) \xrightarrow{d} \mathcal{N}(0, \frac{1}{\mathcal{I}(\theta)} ) $. In our case, $ (\hat{\theta} - \theta) \xrightarrow{d} \mathcal{N}(0, \frac{1}{\mathcal{I}(\theta)} ) $ where $ \mathcal{I}(\theta) $ is cumulative observed fisher information instead of fisher information based on only one observation.
+
+As for heritability, we can use delta method. Let $ \hat{h}^{2} = g(\hat{\sigma}^{2}_{u}, \hat{\sigma}^{2}_{e}) $, where $ g(x,y) = \frac{y}{x+y} $.  We have $ (\hat{h}^{2} - h^{2}) \xrightarrow{d} \mathcal{N}(0, \nabla g(\sigma^{2}_{u}, \hat{\sigma}^{2}_{e})^{\text{T}} \mathcal{I}(\sigma^{2}_{u}, \hat{\sigma}^{2}_{e})^{-1} \nabla g(\sigma^{2}_{u}, \hat{\sigma}^{2}_{e})^{\text{T}} ) $
 
 \section{Experiment and Result}
 
-We first select 100 samples with 1000 genetic markers and implement MLE algorithms. But the result is unsatisfactory. $ \delta $ tends to be $ + \infty $, which means $ \frac{\sigma^{2}_{e}}{\sigma^{2}_{u}} $ goes to $ + \infty $ and heritability is $ 0 $. 
+\subsection{Estimation}
 
+First, we give the result of estimators using maximum likelihood estimation as table \ref{table_beta} and \ref{table_sigma_h} show.
 
-%\section{Conclusion}
+\begin{table}[htbp]
+	\caption{$ \hat{\beta} $}
+	\label{table_beta}
+	\centering
+	\begin{tabular}{lllll}
+		\toprule
+		Phenotype index	& 1 & 2 & 3 & 4 \\
+		\midrule
+		$ \beta_1 $ & -98.7419 & 207.8310 & -169.5053 & -129.4608 \\
+		$ \beta_2 $ & -0.7463 & -1.2053 & -0.4977 & -0.6524 \\
+		$ \beta_3 $ & -4.8848 & -1.1517 & -5.9902 & 2.0639 \\
+		$ \beta_4 $ & -2.7444 & -0.1593 & -3.2975 & -0.3526 \\
+		$ \beta_5 $ & -4.0216 & -0.6453 & -4.8566 & -1.0331 \\
+		$ \beta_6 $ & -0.6055 & 2.2048 & -1.5982 & -0.3666 \\
+		$ \beta_7 $ & -0.3871 & -3.2558 & 2.5048 & 0.1385 \\
+		$ \beta_8 $ & 0.8406 & -0.5296 & 0.8713 & 1.3091 \\
+		$ \beta_9 $ & 0.4326 & -0.2600 & 0.9979 & -1.1264 \\
+		$ \beta_{10} $ & 0.7049 & 2.6655 & -0.0058 & -0.5154 \\
+		$ \beta_{11} $ & 1.3878 & -2.8899 & 2.3698 & 1.8129 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
 
+\begin{table}[htbp]
+	\caption{$ \hat{\sigma}^{2}_{u}, \hat{\sigma}^{2}_{e}, \hat{h}^{2} $}
+	\label{table_sigma_h}
+	\centering
+	\begin{tabular}{lllll}
+		\toprule
+		Phenotype index	& 1 & 2 & 3 & 4 \\
+		\midrule
+		$ \hat{\sigma}^{2}_{u} $ & 0.2180 & 0.3045 & 0.2854 & 0.1544 \\
+		$ \hat{\sigma}^{2}_{e} $ & 0.7715 & 0.6890 & 0.6890 & 0.8430 \\
+		$ \hat{h}^{2} $ & 0.2203 & 0.3065 & 0.2902 & 0.1548 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\subsection{Standard Error}
+
+Then we can calculate standards errors of estimators based on observed fisher information matrix and delta methods, as table \ref{table_beta_se} and \ref{table_sigma_h_se} show.
+
+\begin{table}[htbp]
+	\caption{$ \se{\hat{\beta}} $}
+	\label{table_beta_se}
+	\centering
+	\begin{tabular}{lllll}
+		\toprule
+		Phenotype index	& 1 & 2 & 3 & 4 \\
+		\midrule
+		$ \se{\beta_1} $ & 230.6555 & 177.3722 & 171.4476 & 171.4921 \\
+		$ \se{\beta_2} $ & 1.6478 & 1.8320 & 1.7800 & 1.4887 \\
+		$ \se{\beta_3} $ & 1.4532 & 1.6002 & 1.5657 & 1.3388 \\
+		$ \se{\beta_4} $ & 1.3590 & 1.4800 & 1.4509 & 1.2669 \\
+		$ \se{\beta_5} $ & 1.3463 & 1.4640 & 1.4354 & 1.2580 \\
+		$ \se{\beta_6} $ & 1.2835 & 1.3854 & 1.3572 & 1.2110 \\
+		$ \se{\beta_7} $ & 1.2890 & 1.3895 & 1.3640 & 1.2140 \\
+		$ \se{\beta_8} $ & 1.2556 & 1.3363 & 1.3138 & 1.1840 \\
+		$ \se{\beta_9} $ & 1.2736 & 1.3405 & 1.3174 & 1.1857 \\
+		$ \se{\beta_{10}} $ & 1.3740 & 1.2900 & 1.2757 & 1.1682 \\
+		$ \se{\beta_{11}} $ & 3.1844 & 2.4377 & 2.3558 & 2.3739 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+	\caption{$ \se{\hat{\sigma}^{2}_{u}}, \se{\hat{\sigma}^{2}_{e}}, \se{\hat{h}^{2}} $}
+	\label{table_sigma_h_se}
+	\centering
+	\begin{tabular}{lllll}
+		\toprule
+		Phenotype index	& 1 & 2 & 3 & 4 \\
+		\midrule
+		$ \se{\hat{\sigma}^{2}_{u}} $ & 0.0750 & 0.0549 & 0.0554 & 0.0546 \\
+		$ \se{\hat{\sigma}^{2}_{e}} $ & 0.0734 & 0.0541 & 0.0540 & 0.0556 \\
+		$ \se{\hat{h}^{2}} $ & 0.0496& 0.0505 & 0.0527 & 0.0512 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\section{Discussion}
+Using linear mixed model, we estimate fixed effects coefficients $ \beta $, the variance of random effects $ \sigma^{2}_{u} $, the variance of error term $ \sigma^{2}_{e} $ and the heritability $ h^{2} $ and compute their standard errors based on observed fisher information matrix.
+
+There is one weird result. The standard error of $ \beta $ is too large and even the magnitude of $ \se{\hat{\beta}} $ is the same as or bigger than the magnitude of $ \hat{\beta} $. It might indicate that the estimation of $ \beta $ is not accurate enough.
 
 \end{document}

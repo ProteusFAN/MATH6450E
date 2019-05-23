@@ -1,3 +1,8 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [1][-]{section.2}{Method}{}% 2
-\BOOKMARK [1][-]{section.3}{Experiment\040and\040Result}{}% 3
+\BOOKMARK [2][-]{subsection.2.1}{Maximum\040Likelihood\040Estimation}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Standard\040Error\040based\040on\040Observed\040Fisher\040Information\040and\040Delta\040Method}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Experiment\040and\040Result}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Estimation}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Standard\040Error}{section.3}% 7
+\BOOKMARK [1][-]{section.4}{Discussion}{}% 8
