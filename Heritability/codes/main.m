@@ -85,7 +85,7 @@ for phenotype_ind = 1:4
     heritability{phenotype_ind} = 1/(1+delta{phenotype_ind});
     
     % ==== standard error of heritability based on delta method ====
-    gradSigma_ue = [-paras.sigma_e/(paras.sigma_u+paras.sigma_e)^2,paras.sigma_u/(paras.sigma_u+paras.sigma_e)^2]';
+    gradSigma_ue = [paras.sigma_e/(paras.sigma_u+paras.sigma_e)^2,-paras.sigma_u/(paras.sigma_u+paras.sigma_e)^2]';
     var = gradSigma_ue'*pinv(fisherInfoSigma())*gradSigma_ue;
     heritability_se{phenotype_ind} = sqrt(var);
 end

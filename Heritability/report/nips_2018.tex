@@ -96,7 +96,7 @@ Linear mixed model is as follows
 	\mathbf{y} = \mathbf{X} \beta  + \mathbf{W u} + \mathbf{e}.
 \end{equation}
 
-$ \mathbf{X} \beta $ is about fixed effects. $ \mathbb{X} \in \mathbb{R}^{n \times (10 +1) } $ includes the principal components scores corresponding to the first ten leading principal components and one column of ones, instead of covariates matrix in general setting. $ \beta $ is the vector of coefficients corresponding to fixed effects.
+$ \mathbf{X} \beta $ is about fixed effects. $ \mathbf{X} \in \mathbb{R}^{n \times (10 +1) } $ includes the principal components scores corresponding to the first ten leading principal components and one column of ones, instead of covariates matrix in general setting. $ \beta $ is the vector of coefficients corresponding to fixed effects.
 
 $ \mathbf{W u} $ is about random effects. $ \mathbf{u} \sim \mathcal{N} (0, \sigma^{2}_{u} \mathbf{I}) $ is the vector of random effect size. $ \mathbf{W} $ is the standardized genotype matrix with zero mean and unit variance, that is,
 
@@ -171,7 +171,7 @@ When $ \theta $ is a vector, the element of fisher information matrix based on o
 
 One property of MLE is $ \sqrt{n}(\hat{\theta} - \theta) \xrightarrow{d} \mathcal{N}(0, \frac{1}{\mathcal{I}(\theta)} ) $. In our case, $ (\hat{\theta} - \theta) \xrightarrow{d} \mathcal{N}(0, \frac{1}{\mathcal{I}(\theta)} ) $ where $ \mathcal{I}(\theta) $ is cumulative observed fisher information instead of fisher information based on only one observation.
 
-As for heritability, we can use delta method. Let $ \hat{h}^{2} = g(\hat{\sigma}^{2}_{u}, \hat{\sigma}^{2}_{e}) $, where $ g(x,y) = \frac{y}{x+y} $.  We have $ (\hat{h}^{2} - h^{2}) \xrightarrow{d} \mathcal{N}(0, \nabla g(\sigma^{2}_{u}, \hat{\sigma}^{2}_{e})^{\text{T}} \mathcal{I}(\sigma^{2}_{u}, \hat{\sigma}^{2}_{e})^{-1} \nabla g(\sigma^{2}_{u}, \hat{\sigma}^{2}_{e})^{\text{T}} ) $
+As for heritability, we can use delta method. Let $ \hat{h}^{2} = g(\hat{\sigma}^{2}_{u}, \hat{\sigma}^{2}_{e}) $, where $ g(x,y) = \frac{x}{x+y} $.  We have $ (\hat{h}^{2} - h^{2}) \xrightarrow{d} \mathcal{N}(0, \nabla g(\sigma^{2}_{u}, \hat{\sigma}^{2}_{e})^{\text{T}} \mathcal{I}(\sigma^{2}_{u}, \hat{\sigma}^{2}_{e})^{-1} \nabla g(\sigma^{2}_{u}, \hat{\sigma}^{2}_{e}) ) $.
 
 \section{Experiment and Result}
 
@@ -262,6 +262,6 @@ Then we can calculate standards errors of estimators based on observed fisher in
 \section{Discussion}
 Using linear mixed model, we estimate fixed effects coefficients $ \beta $, the variance of random effects $ \sigma^{2}_{u} $, the variance of error term $ \sigma^{2}_{e} $ and the heritability $ h^{2} $ and compute their standard errors based on observed fisher information matrix.
 
-There is one weird result. The standard error of $ \beta $ is too large and even the magnitude of $ \se{\hat{\beta}} $ is the same as or bigger than the magnitude of $ \hat{\beta} $. It might indicate that the estimation of $ \beta $ is not accurate enough.
+There is one weird result. The standard error of $ \beta $ is too large and even the magnitude of $ \se{\hat{\beta}} $ is the same as or bigger than the magnitude of $ \hat{\beta} $. It might indicate that the estimation of $ \beta $ is not accurate enough. This might is caused by the fact that $ \mathbf{X} $ is principal component score of phenotype matrix, instead of true covariates matrix. 
 
 \end{document}
