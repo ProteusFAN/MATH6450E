@@ -262,6 +262,6 @@ Then we can calculate standards errors of estimators based on observed fisher in
 \section{Discussion}
 Using linear mixed model, we estimate fixed effects coefficients $ \beta $, the variance of random effects $ \sigma^{2}_{u} $, the variance of error term $ \sigma^{2}_{e} $ and the heritability $ h^{2} $ and compute their standard errors based on observed fisher information matrix.
 
-There is one weird result. The standard error of $ \beta $ is too large and even the magnitude of $ \se{\hat{\beta}} $ is the same as or bigger than the magnitude of $ \hat{\beta} $. It might indicate that the estimation of $ \beta $ is not accurate enough. This might is caused by the fact that $ \mathbf{X} $ is principal component score of phenotype matrix, instead of true covariates matrix. 
+There is one weird result. The standard error of $ \beta $ is too large and even the magnitude of $ \se{\hat{\beta}} $ is the same as or bigger than the magnitude of $ \hat{\beta} $. It might indicate that the estimation of $ \beta $ is not accurate enough. This might be caused by the fact that $ \mathbf{X} $ is principal component score of phenotype matrix, instead of true covariates matrix.
 
 \end{document}
